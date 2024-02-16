@@ -16,13 +16,10 @@ public class Timetable {
     private Long id;
 
     @ManyToOne
-    private Class classEntity;
-
-    @ManyToOne
     private Teacher teacherEntity;
 
     @ManyToOne
-    private Subject subjectEntity;
+    private Class classEntity;
 
     private String dayOfWeek;
     private String timeSlot;

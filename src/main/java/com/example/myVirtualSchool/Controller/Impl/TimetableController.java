@@ -20,9 +20,9 @@ public class TimetableController implements ControllerInterface<Timetable> {
         this.timetableService = timetableService;
     }
 
-    @PostMapping(path = "/create_timetable")
-    public Timetable create(@RequestBody Timetable obj) {
-        return timetableService.create(obj);
+    @PostMapping(path = "/create_timetable/{teacher_id}/{class_id}")
+    public Timetable create(@RequestBody Timetable obj, @PathVariable Long teacher_id,  @PathVariable Long class_id) {
+        return timetableService.create(obj, teacher_id, class_id);
     }
 
     @Override
