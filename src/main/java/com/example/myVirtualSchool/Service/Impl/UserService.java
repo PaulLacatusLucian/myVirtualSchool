@@ -8,6 +8,7 @@ import com.example.myVirtualSchool.Service.ServiceInterface;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -48,8 +49,8 @@ public class UserService implements ServiceInterface<User> {
     }
 
     public boolean authenticateUser(String username, String password) {
-        User user = userRepo.findByUsernameAndPassword(username, password);
-        return user != null;
+        User user = userRepo.findByUsername(username);
+        return Objects.equals(user.getPassword(), password);
     }
 
     public Long getUserIdByUsername(String username) {

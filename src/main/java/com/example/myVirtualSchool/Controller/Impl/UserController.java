@@ -22,7 +22,6 @@ public class UserController implements ControllerInterface<User> {
     }
 
     @PostMapping(path = "/create_user")
-    @PermitAll
     public User create(@RequestBody User obj) {
         return userService.create(obj);
     }
@@ -34,7 +33,6 @@ public class UserController implements ControllerInterface<User> {
     }
 
     @Override
-    @PermitAll
     @GetMapping(path = "/get_users")
     public List<User> listAll() {
         return userService.findAll();

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Signup Forms</title>
+</head>
+<body>
+<h2>Login Form</h2>
+<form id="login-form" action="/basic_login" method="post">
+    <label for="login-username">Username:</label><br>
+    <input type="text" id="login-username" name="username" required><br>
+    <label for="login-password">Password:</label><br>
+    <input type="password" id="login-password" name="password" required><br><br>
+    <input type="submit" value="Login">
+</form>
+
+<h2>Signup Form</h2>
+<form id="signup-form" action="/basic_signup" method="post">
+    <label for="signup-username">Username:</label><br>
+    <input type="text" id="signup-username" name="username" required><br>
+    <label for="signup-password">Password:</label><br>
+    <input type="password" id="signup-password" name="password" required><br><br>
+    <input type="submit" value="Signup">
+</form>
+
+<script>
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var username = document.getElementById('login-username').value;
+        var password = document.getElementById('login-password').value;
+
+        fetch('/basic_login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/homepage';
+                } else {
+                    window.location.href = '/registration';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+
+    document.getElementById('signup-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var username = document.getElementById('signup-username').value;
+        var password = document.getElementById('signup-password').value;
+        fetch('/basic_signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/registration';
+                } else {
+                    window.location.href = '/registration';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+</body>
+</html>
