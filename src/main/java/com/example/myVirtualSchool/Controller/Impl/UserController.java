@@ -1,11 +1,10 @@
 package com.example.myVirtualSchool.Controller.Impl;
 
 import com.example.myVirtualSchool.Controller.ControllerInterface;
-import com.example.myVirtualSchool.Domain.Subject;
 import com.example.myVirtualSchool.Domain.User;
 import com.example.myVirtualSchool.Helpers.ObjectUpdater;
-import com.example.myVirtualSchool.Service.Impl.SubjectService;
 import com.example.myVirtualSchool.Service.Impl.UserService;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +22,7 @@ public class UserController implements ControllerInterface<User> {
     }
 
     @PostMapping(path = "/create_user")
+    @PermitAll
     public User create(@RequestBody User obj) {
         return userService.create(obj);
     }
@@ -34,6 +34,7 @@ public class UserController implements ControllerInterface<User> {
     }
 
     @Override
+    @PermitAll
     @GetMapping(path = "/get_users")
     public List<User> listAll() {
         return userService.findAll();

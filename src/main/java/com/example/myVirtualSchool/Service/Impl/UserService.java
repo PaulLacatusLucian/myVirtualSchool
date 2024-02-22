@@ -46,4 +46,19 @@ public class UserService implements ServiceInterface<User> {
             throw new IllegalArgumentException("Class with ID " + id + " does not exist");
         }
     }
+
+    public boolean authenticateUser(String username, String password) {
+        User user = userRepo.findByUsernameAndPassword(username, password);
+        return user != null;
+    }
+
+    public Long getUserIdByUsername(String username) {
+        User user = userRepo.findByUsername(username);
+        return user != null ? user.getId() : null;
+    }
+
+    public boolean isUsernameTaken(String username) {
+        return userRepo.existsByUsername(username);
+    }
+
 }
