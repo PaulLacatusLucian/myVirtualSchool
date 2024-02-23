@@ -50,7 +50,7 @@ public class UserService implements ServiceInterface<User> {
 
     public boolean authenticateUser(String username, String password) {
         User user = userRepo.findByUsername(username);
-        return Objects.equals(user.getPassword(), password);
+        return password.equals(user.getPassword());
     }
 
     public Long getUserIdByUsername(String username) {
