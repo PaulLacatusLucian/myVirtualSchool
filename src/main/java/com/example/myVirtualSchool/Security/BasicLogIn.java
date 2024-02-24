@@ -20,7 +20,7 @@ public class BasicLogIn {
     }
 
 
-    @PostMapping("/basic_login")
+    @PostMapping("public/basic_login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         boolean isAuthenticated = userService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword());
 
@@ -31,7 +31,7 @@ public class BasicLogIn {
         }
     }
 
-    @PostMapping("/basic_signup")
+    @PostMapping("public/basic_signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest signupRequest) {
         String username = signupRequest.getUsername();
         String password = signupRequest.getPassword();

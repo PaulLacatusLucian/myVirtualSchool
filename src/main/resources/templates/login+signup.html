@@ -4,76 +4,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login and Signup Forms</title>
+    <link rel="stylesheet" href="../static/login+signup.css">
 </head>
 <body>
-<h2>Login Form</h2>
-<form id="login-form" action="/basic_login" method="post">
-    <label for="login-username">Username:</label><br>
-    <input type="text" id="login-username" name="username" required><br>
-    <label for="login-password">Password:</label><br>
-    <input type="password" id="login-password" name="password" required><br><br>
-    <input type="submit" value="Login">
-</form>
-
-<h2>Signup Form</h2>
-<form id="signup-form" action="/basic_signup" method="post">
-    <label for="signup-username">Username:</label><br>
-    <input type="text" id="signup-username" name="username" required><br>
-    <label for="signup-password">Password:</label><br>
-    <input type="password" id="signup-password" name="password" required><br><br>
-    <input type="submit" value="Signup">
-</form>
+<div class="container" id="container">
+    <div class="form-container sign-up-container">
+        <form id="signup-form" action="/public/basic_signup" method="post">
+            <h1>Create Account</h1>
+            <div class="social-container">
+                <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <span>or use your email for registration</span>
+            <input type="text" placeholder="Name" name="name" required/>
+            <input type="text" placeholder="Username" name="username" required/>
+            <input type="password" placeholder="Password" name="password" required/>
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+    <div class="form-container sign-in-container">
+        <form id="login-form" action="/public/basic_login" method="post">
+            <h1>Sign in</h1>
+            <div class="social-container">
+                <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <span>or use your account</span>
+            <input type="text" placeholder="Username" name="username" required/>
+            <input type="password" placeholder="Password" name="password" required/>
+            <a href="#">Forgot your password?</a>
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
+    <div class="overlay-container">
+        <div class="overlay">
+            <div class="overlay-panel overlay-left">
+                <h1>Welcome Back!</h1>
+                <p>To keep connected with us please login with your personal info</p>
+                <button class="ghost" id="signIn">Sign In</button>
+            </div>
+            <div class="overlay-panel overlay-right">
+                <h1>Hello, Friend!</h1>
+                <p>Enter your personal details and start journey with us</p>
+                <button class="ghost" id="signUp">Sign Up</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-    document.getElementById('login-form').addEventListener('submit', function(event) {
-        event.preventDefault();
+    const signUpButton = document.getElementById('signUp');
+    const signInButton = document.getElementById('signIn');
+    const container = document.getElementById('container');
 
-        var username = document.getElementById('login-username').value;
-        var password = document.getElementById('login-password').value;
-
-        fetch('/basic_login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password
-            })
-        })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = '/homepage';
-                } else {
-                    window.location.href = '/registration';
-                }
-            })
-            .catch(error => console.error('Error:', error));
+    signUpButton.addEventListener('click', () => {
+        container.classList.add("right-panel-active");
     });
 
+    signInButton.addEventListener('click', () => {
+        container.classList.remove("right-panel-active");
+    });
 
-    document.getElementById('signup-form').addEventListener('submit', function(event) {
+    document.getElementById('signup-form').addEventListener('submit', async function(event) {
         event.preventDefault();
-        var username = document.getElementById('signup-username').value;
-        var password = document.getElementById('signup-password').value;
-        fetch('/basic_signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password
-            })
-        })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = '/registration';
-                } else {
-                    window.location.href = '/registration';
-                }
-            })
-            .catch(error => console.error('Error:', error));
+        const formData = new FormData(event.target);
+        const name = formData.get('name');
+        const username = formData.get('username');
+        const password = formData.get('password');
+        try {
+            const response = await fetch('/public/basic_signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, username, password })
+            });
+            if (response.ok) {
+                window.location.href = '/homepage';
+            } else {
+                alert('Signup failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again later.');
+        }
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const username = formData.get('username');
+        const password = formData.get('password');
+        try {
+            const response = await fetch('/public/basic_login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+            if (response.ok) {
+                window.location.href = '/homepage';
+            } else {
+                alert('Login failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again later.');
+        }
     });
 </script>
 </body>
