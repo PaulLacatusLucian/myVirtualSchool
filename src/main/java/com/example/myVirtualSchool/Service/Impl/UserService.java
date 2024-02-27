@@ -1,65 +1,76 @@
 package com.example.myVirtualSchool.Service.Impl;
 
-import com.example.myVirtualSchool.Domain.Timetable;
 import com.example.myVirtualSchool.Domain.User;
-import com.example.myVirtualSchool.Repository.TimetableRepo;
 import com.example.myVirtualSchool.Repository.UserRepo;
-import com.example.myVirtualSchool.Service.ServiceInterface;
+import com.example.myVirtualSchool.Registration.Token.ConfirmationToken;
+import com.example.myVirtualSchool.Registration.Token.ConfirmationTokenService;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
-public class UserService implements ServiceInterface<User> {
+@AllArgsConstructor
+public class UserService implements UserDetailsService {
 
-    private final UserRepo userRepo;
+    private final static String USER_NOT_FOUND_MSG =
+            "user with email %s not found";
 
-    public UserService(UserRepo userRepo) {
-        this.userRepo = userRepo;
-    }
-
-    public User create(User obj) {
-        return userRepo.save(obj);
-    }
+    private final UserRepo appUserRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ConfirmationTokenService confirmationTokenService;
 
     @Override
-    public List<User> findAll() {
-        return (List<User>) userRepo.findAll();
+    public UserDetails loadUserByUsername(String email)
+            throws UsernameNotFoundException {
+        return appUserRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                String.format(USER_NOT_FOUND_MSG, email)));
     }
 
-    @Override
-    public Optional<User> findOne(Long id) {
-        return userRepo.findById(id);
-    }
+    public String signUpUser(User appUser) {
+        boolean userExists = appUserRepository
+                .findByEmail(appUser.getEmail())
+                .isPresent();
 
-    @Override
-    public boolean ifExist(Long id) {
-        return userRepo.existsById(id);
-    }
+        if (userExists) {
+            // TODO check of attributes are the same and
+            // TODO if email not confirmed send confirmation email.
 
-    @Override
-    public void delete(Long id) {
-        if (ifExist(id)) {
-            userRepo.deleteById(id);
-        } else {
-            throw new IllegalArgumentException("Class with ID " + id + " does not exist");
+            throw new IllegalStateException("email already taken");
         }
+
+        String encodedPassword = bCryptPasswordEncoder
+                .encode(appUser.getPassword());
+
+        appUser.setPassword(encodedPassword);
+
+        appUserRepository.save(appUser);
+
+        String token = UUID.randomUUID().toString();
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15),
+                appUser
+        );
+
+        confirmationTokenService.saveConfirmationToken(
+                confirmationToken);
+
+//        TODO: SEND EMAIL
+
+        return token;
     }
 
-    public boolean authenticateUser(String username, String password) {
-        User user = userRepo.findByUsername(username);
-        return password.equals(user.getPassword());
+    public int enableAppUser(String email) {
+        return appUserRepository.enableAppUser(email);
     }
-
-    public Long getUserIdByUsername(String username) {
-        User user = userRepo.findByUsername(username);
-        return user != null ? user.getId() : null;
-    }
-
-    public boolean isUsernameTaken(String username) {
-        return userRepo.existsByUsername(username);
-    }
-
 }
